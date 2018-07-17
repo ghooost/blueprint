@@ -2,37 +2,27 @@
   "codepage":"utf-8",
   "pages":[
     {
+      "template":"_page",
       "file":"index.html",
-      "url":"/",
-      "head":[
-        {
-          "block":"_head",
-          "params":{
-            "title":"Это первая страница",
-            "description":"blabla"
-          }
-        }
-      ],
-      "body":[
+      "url":"./",
 
-      ]
-    },
-    {
-      "file":"about.html",
-      "url":"/about/",
-      "head":[
-        {
-          "block":"_head",
-          "params":{
-            "title":"Это вторая страница",
-            "description":"blabla"
-          }
-        }
-      ],
-      "body":[
+      "name":"Главная",
 
+      "http-title":"Это первая страница",
+      "http-description":"blabla",
+
+      "header":[
+        {"template":"header"}
+      ],
+      "main":[
+        {"template":"section_note"},
+        {"template":"section_note"},
+        {"template":"section_note"},
+        {"template":"section_note"}
+      ],
+      "footer":[
+        {"template":"footer"}
       ]
     }
-
   ]
 }

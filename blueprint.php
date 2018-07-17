@@ -3,6 +3,7 @@ if(!file_exists('blueprint.json')){
   die("blueprint.json should be at the same folder with the sitebones.php\r\n");
 };
 
+
 $siteData=json_decode(join("",file('blueprint.json')),true);
 $filesInUse=[];
 
@@ -10,6 +11,7 @@ if(!$siteData){
   die("blueprint.json has no proper site structure\r\n");
 };
 
+if(!file_exists('build')) mkdir('build',0777);
 clearDir('build');
 
 $styles=[];
@@ -17,18 +19,21 @@ $js=[];
 $images=[];
 $rules=[];
 
+if(empty($siteData['maincss'])) $siteData['maincss']=mkRandomName().'.css';
+if(empty($siteData['mainjs'])) $siteData['mainjs']=mkRandomName().'.js';
+
 if($siteData['pages'] && count($siteData['pages']))
   foreach($siteData['pages'] as $page){
     buildPage($page,$siteData,$styles,$js,$images,$rules);
   }
 
-$f=fopen('build/index.css','w');
+$f=fopen('build/'.$siteData['maincss'],'w');
 if($f){
   fputs($f,join("\r\n",$styles));
   fclose($f);
 };
 
-$f=fopen('build/index.js','w');
+$f=fopen('build/'.$siteData['mainjs'],'w');
 if($f){
   fputs($f,join("\r\n",$js));
   fclose($f);
@@ -36,13 +41,16 @@ if($f){
 
 $hta="";
 foreach($rules as $url=>$file){
-  $hta.='RewriteRule ^'.$file.'$ '.$url.' [L,R=301]'."\r\n";
+  $url=preg_replace('/\/+$/','',$url);
+  $hta.='RewriteRule ^'.$url.'(\/)*$ '.$file.' [L]'."\r\n";
 };
 
 if($hta){
   $f=fopen('build/.htaccess','w');
   if($f){
     fputs($f,<<<EOT
+AddDefaultCharset {$siteData['codepage']}
+
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -54,38 +62,26 @@ EOT
   };
 };
 
+if(count($images)){
+  if(!file_exists('build/afb')) mkdir('build/afb',0777);
+  foreach($images as $src=>$dst)
+    copy($src,'build/afb/'.$dst);
+};
 
 function buildPage($pageData,$siteData,&$styles,&$js,&$images,&$rules){
   if(!empty($pageData['url']) && $pageData['url']!=$pageData['file']){
     $rules[$pageData['url']]=$pageData['file'];
+  } else {
+    $rules['/']=$pageData['file'];
   };
-  $head="";
-  if($pageData['head'] && count($pageData['head']))
-    foreach($pageData['head'] as $block)
-      buildBlock($block,$pageData,$siteData,$head,$styles,$js,$images);
 
-  $body="";
-  if($pageData['body'] && count($pageData['body']))
-    foreach($pageData['body'] as $block)
-      buildBlock($block,$pageData,$siteData,$body,$styles,$js,$images);
+  $pageBody="";
+  buildBlock($pageData,$pageData,$siteData,$pageBody,$styles,$js,$images);
 
   $fileName=$pageData['file']?$pageData['file']:md5(json_encode($pageData)).".html";
   $f=fopen('build/'.$fileName,"w");
   if($f){
-    fputs($f,<<<EOT
-<!DOCTYPE html>
-<html>
-<head>
-$head
-<link rel="stylesheet" href="index.css"/>
-<script src="index.js"></script>
-</head>
-<body>
-$body
-</body>
-</html>
-EOT
-    );
+    fputs($f,$pageBody);
     fclose($f);
   }
 }
@@ -93,20 +89,10 @@ EOT
 function buildBlock($blockData,$pageData,$siteData,&$html,&$styles,&$js,&$images){
   global $filesInUse;
 
-  if(!$blockData['block']) return;
-  $folder='blocks/'.$blockData['block'];
+
+  if(!$blockData['template']) return;
+  $folder='blocks/'.$blockData['template'];
   if(!file_exists($folder)) return;
-
-
-  ob_start();
-  if(file_exists($folder.'/index.php')){
-    require $folder.'/index.php';
-  } else if(file_exists($folder.'/index.html')){
-    readfile($folder.'/index.html');
-  };
-  $html.=ob_get_contents();
-  ob_end_clean();
-
 
   ob_start();
   if(file_exists($folder.'/css.php')){
@@ -144,13 +130,25 @@ function buildBlock($blockData,$pageData,$siteData,&$html,&$styles,&$js,&$images
   };
   ob_end_clean();
 
+  ob_start();
+  if(file_exists($folder.'/index.php')){
+    require $folder.'/index.php';
+  } else if(file_exists($folder.'/index.html')){
+    readfile($folder.'/index.html');
+  };
+  $html.=ob_get_contents();
+  ob_end_clean();
+
 
   if (is_dir($folder.'/afb')) {
       if ($dh = opendir($folder.'/afb')) {
           while (($file = readdir($dh)) !== false)
-              if($file!='.' && $file!='..')
-                if(!in_array($folder.'/afb/'.$file,$images))
-                  $images[]=$folder.'/afb/'.$file;
+              if($file!='.' && $file!='..'){
+                $src=$folder.'/afb/'.$file;
+                $dst=$file;
+                if(empty($images[$src]))
+                  $images[$src]=$dst;
+              };
 
           closedir($dh);
       }
@@ -172,7 +170,14 @@ function clearDir($dir){
           closedir($dh);
       }
   };
-
 }
 
+function mkRandomName($len=8){
+  $ret="";
+  $startstr=md5(time()/13);
+  $keys=array_rand(array_fill(0,32,'.'),$len);
+  foreach($keys as $key)
+    $ret.=$startstr[$key];
+  return $ret;
+}
 ?>
