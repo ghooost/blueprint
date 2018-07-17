@@ -10,6 +10,8 @@ if(!$siteData){
   die("blueprint.json has no proper site structure\r\n");
 };
 
+clearDir('build');
+
 $styles=[];
 $js=[];
 $images=[];
@@ -155,6 +157,22 @@ function buildBlock($blockData,$pageData,$siteData,&$html,&$styles,&$js,&$images
   };
 }
 
+function clearDir($dir){
+  if (is_dir($dir)) {
+      if ($dh = opendir($dir)) {
+          while (($file = readdir($dh)) !== false)
+              if($file!='.' && $file!='..')
+                if(is_dir($dir.'/'.$file)){
+                  clearDir($dir.'/'.$file);
+                  rmdir($dir.'/'.$file);
+                } else {
+                  unlink($dir.'/'.$file);
+                };
 
+          closedir($dh);
+      }
+  };
+
+}
 
 ?>
