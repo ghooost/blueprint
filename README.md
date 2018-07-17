@@ -19,9 +19,9 @@ Is a map of your site. Here you configure your site pages.
       "file":"index.html",  //---------- name of file of the page
       "url":"./",         //--------- url to the page, see .htaccess
 
-      "name":"Главная",   //--------- usually it requires for menu
+      "name":"Home page",   //--------- usually it requires for menu
 
-      "http-title":"Это первая страница",
+      "http-title":"The page title",
       "http-description":"blabla",
 
       "header":[
