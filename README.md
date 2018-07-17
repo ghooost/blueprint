@@ -57,7 +57,9 @@ You can use php generators for each part of your blocks.
 At this case we make
 ```
 require "blocks/footer/index.php";
-instead of
+
+//instead of
+
 readfile("blocks/footer/index.html")
 ```
 PHP code receives:
@@ -85,19 +87,19 @@ data of page that hosts the block
 }
 */
 
-$blockData
+$blockData=[]
 /*
 data of the block
 {
   "template":"section_note"
+  ...
 }
 */
 ```
-You also has access to $styles, $js, $images arrays, where blueprint
-collects materials - css, js, images of your site.
+Also it has access to $styles, $js, $images arrays, where blueprint collects materials - css, js, images of your site.
 
 ## Menu
-Menu is an obvious sample of PHP generator. It's simple code is like:
+Menu is an obvious sample of PHP generator. Simple menu code will look like:
 ```
 <?php
   $nav="";
@@ -114,7 +116,7 @@ EOT;
 EOT;
 ?>
 ```
-Whole standart output of your PHP generators will be inserted into final pages.
+All standart output of your PHP generators will be inserted into final pages.
 
 ## Build folder
 Blueprint output generated files into build folder. After building it's
