@@ -44,11 +44,13 @@ Blocks - are bricks you build sites with. Each block has it's own folder inside 
 /blocks
   /footer
     /afb        //---- place images here
+      1.png
+      2.png
     index.js    //---- can be js.php
     index.css   //---- can be css.php
     index.html  //---- can be index.php
 ```
-So, footer is a block. In the footer folder you place it's html content, css, js, images.
+At this case footer is a block. In the footer folder we place html content (index.html), css (index.css), js (index.js) and a couple of images (1.png and 2.png).
 
 ## Dynamic vs static content
 You can use php generators for each part of your blocks.
