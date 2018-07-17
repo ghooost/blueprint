@@ -1,0 +1,9 @@
+body {
+  display:flex;
+  flex-direction: column;
+  font-size:14px;
+  color:#000;
+  background-color: #fff;
+  font-family: Tahoma;
+  line-height: 1.2;
+}

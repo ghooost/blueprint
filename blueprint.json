@@ -1,0 +1,38 @@
+{
+  "codepage":"utf-8",
+  "pages":[
+    {
+      "file":"index.html",
+      "url":"/",
+      "head":[
+        {
+          "block":"_head",
+          "params":{
+            "title":"Это первая страница",
+            "description":"blabla"
+          }
+        }
+      ],
+      "body":[
+
+      ]
+    },
+    {
+      "file":"about.html",
+      "url":"/about/",
+      "head":[
+        {
+          "block":"_head",
+          "params":{
+            "title":"Это вторая страница",
+            "description":"blabla"
+          }
+        }
+      ],
+      "body":[
+
+      ]
+    }
+
+  ]
+}
