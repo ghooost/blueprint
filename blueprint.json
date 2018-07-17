@@ -6,22 +6,51 @@
       "file":"index.html",
       "url":"./",
 
-      "name":"Главная",
+      "name":"Home",
 
-      "http-title":"Это первая страница",
+      "http-title":"The first page",
+
+      "header":[
+        {
+          "template":"header"
+        }
+      ],
+      "main":[
+        {
+          "template":"section_note"
+        }
+      ],
+      "footer":[
+        {
+          "template":"footer"
+        }
+      ]
+    },
+
+    {
+      "template":"_page",
+      "file":"about.html",
+      "url":"about",
+
+      "name":"About",
+
+      "http-title":"About page",
       "http-description":"blabla",
 
       "header":[
-        {"template":"header"}
+        {
+          "template":"header"
+        }
       ],
       "main":[
-        {"template":"section_note"},
-        {"template":"section_note"},
-        {"template":"section_note"},
-        {"template":"section_note"}
+        {
+          "template":"section_note"
+        }
       ],
       "footer":[
-        {"template":"footer"}
+        {
+          "template":"footer"
+        }
       ]
     }
   ]
