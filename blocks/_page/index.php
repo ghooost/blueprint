@@ -19,8 +19,6 @@ echo <<<EOT
 <html>
 <head>
 <meta charset="{$siteData['codepage']}"/>
-<title>{$blockData['http-title']}</title>
-<link href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700|Oswald:400,700&amp;subset=cyrillic" rel="stylesheet">
 <link rel="stylesheet" href="{$siteData['maincss']}"/>
 <script src="{$siteData['mainjs']}"></script>
 {$pieces['head']}

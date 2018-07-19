@@ -1,0 +1,22 @@
+{
+  "head":[
+    {
+      "template":"head"
+    }
+  ],
+  "header":[
+    {
+      "template":"header"
+    }
+  ],
+  "main":[
+    {
+      "template":"section_note"
+    }
+  ],
+  "footer":[
+    {
+      "template":"footer"
+    }
+  ]
+}

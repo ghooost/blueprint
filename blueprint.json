@@ -1,30 +1,15 @@
 {
   "codepage":"utf-8",
+  "libFolder":"blocks",
+  "outputFolder":"build",
   "pages":[
     {
       "template":"_page",
       "file":"index.html",
       "url":"./",
-
       "name":"Home",
-
       "http-title":"The first page",
-
-      "header":[
-        {
-          "template":"header"
-        }
-      ],
-      "main":[
-        {
-          "template":"section_note"
-        }
-      ],
-      "footer":[
-        {
-          "template":"footer"
-        }
-      ]
+      "data":"testsite/index.json"
     },
 
     {
