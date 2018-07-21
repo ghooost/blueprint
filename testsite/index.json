@@ -1,8 +1,7 @@
 {
   "head":[
-    {
-      "template":"head"
-    }
+    {"template":"head"},
+    {"template":"localstyles"}
   ],
   "header":[
     {
@@ -10,9 +9,8 @@
     }
   ],
   "main":[
-    {
-      "template":"section_note"
-    }
+    {"template":"fastneasy"},
+    {"template":"prices"}
   ],
   "footer":[
     {

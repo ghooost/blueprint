@@ -18,9 +18,6 @@ echo <<<EOT
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="{$siteData['codepage']}"/>
-<link rel="stylesheet" href="{$siteData['maincss']}"/>
-<script src="{$siteData['mainjs']}"></script>
 {$pieces['head']}
 </head>
 <body>

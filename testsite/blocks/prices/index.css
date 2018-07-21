@@ -1,0 +1,155 @@
+.prices {
+  margin-top:226px;
+  margin-bottom:92px;
+}
+
+.prices_table {
+  text-align:center;
+  border-collapse:collapse;
+  width:100%;
+}
+
+.prices_table th {
+  font-size:35px;
+  padding:20px 0 42px 0;
+  font-weight: normal;
+}
+
+.prices_table .c2 {
+  padding-right:36px;
+  box-sizing: border-box;
+  width:245px;
+}
+.prices_table .c3 {
+  padding-left:45px;
+  box-sizing: border-box;
+  width:245px;
+}
+
+.prices_table .c1 {
+  text-align:left;
+}
+
+.prices_table tbody tr:hover td{
+  background-color: #f0f0f0;
+}
+
+.prices_term {
+  position:absolute;
+  top:-20px;
+  left:0;
+  width:200px;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: #717171;
+}
+.prices_sale {
+  position:absolute;
+  bottom:-20px;
+  left:0;
+  width:200px;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: #0074eb;
+}
+
+.prices_sale::after {
+  content:'';
+  position:absolute;
+  top:50%;
+  height:1px;
+  width:80px;
+  background-color:#0074eb;
+  left:60px;
+  transform-origin: center;
+  transform:rotate(-15deg);
+}
+
+.prices_label {
+  width:100%;
+  position:relative;
+
+}
+.prices_table td {
+  font-size: 15px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.2;
+  letter-spacing: normal;
+  color: #565656;
+  height:31px;
+  border:none;
+  border-top: solid 1px #e9e9e9;
+}
+
+.prices_table td.c2::before, .prices_table td.c3::before {
+  display:inline-block;
+  content:'';
+  width:15px;
+  height:15px;
+  border-radius: 8px;
+  background: #000;
+}
+
+.price_buttons {
+  display:flex;
+  flex-direction: row;
+  margin-top: 18px;
+  justify-content: flex-end;
+}
+
+.price_button {
+  display:inline-block;
+  width: 200px;
+  height: 40px;
+  border-radius: 40px;
+  background-color: #0074eb;
+  box-shadow: 0 17px 50px 0 #75aef0;
+  color:#fff;
+  text-decoration:none;
+  font-size:16px;
+  line-height:40px;
+  box-sizing:border-box;
+  margin-left:90px;
+  text-align: center;
+  transition:box-shadow 0.3s, background-color 0.3s;
+}
+
+.price_button:hover {
+  box-shadow: 0 9px 25px 0 #75aef0;
+  background-color: #0090fb;
+}
+
+.price_button:active {
+box-shadow: 0 0 0 0 #75aef0;
+background-color: #0090fb;
+}
+
+
+.price_button.white {
+  box-shadow: 0 17px 50px 0 #eee;
+  color:#0074eb;
+  border:1px solid #0074eb;
+  background-color: #ffffff;
+}
+
+.price_button.white:hover {
+  box-shadow: 0 9px 25px 0 #eee;
+  background-color: #eeeeee;
+}
+
+.price_button.white:active {
+  box-shadow: 0 0 0 0 #eee;
+  background-color: #eeeeee;
+}

@@ -1,42 +1,4 @@
 {
-  "codepage":"utf-8",
-  "libFolder":"blocks",
-  "outputFolder":"build",
-  "pages":[
-    {
-      "template":"_page",
-      "file":"index.html",
-      "url":"./",
-      "name":"Home",
-      "http-title":"The first page",
-      "data":"testsite/index.json"
-    },
-
-    {
-      "template":"_page",
-      "file":"about.html",
-      "url":"about",
-
-      "name":"About",
-
-      "http-title":"About page",
-      "http-description":"blabla",
-
-      "header":[
-        {
-          "template":"header"
-        }
-      ],
-      "main":[
-        {
-          "template":"section_note"
-        }
-      ],
-      "footer":[
-        {
-          "template":"footer"
-        }
-      ]
-    }
-  ]
+  "ext-data":"testsite/blueprint.json",
+  "folder-static":"st"
 }

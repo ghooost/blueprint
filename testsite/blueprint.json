@@ -1,0 +1,13 @@
+{
+  "folder-current":"testsite",
+  "folder-output":"testsite/build",
+  "pages":[
+    {
+      "file":"index.html",
+      "url":"./",
+      "name":"Home",
+      "http-title":"The first page",
+      "ext-data":"testsite/index.json"
+    }
+  ]
+}
