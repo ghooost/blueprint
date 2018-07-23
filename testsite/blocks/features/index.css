@@ -68,9 +68,12 @@
 .features_text_p:first-child{
   margin-top:0;
 }
+
+.features_text_p_nobm,
 .features_text_p:last-child {
   margin-bottom:0;
 }
+
 
 .features_strong {
   color:#0c454f;

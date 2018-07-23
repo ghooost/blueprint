@@ -4,18 +4,15 @@
     {"template":"localstyles"}
   ],
   "header":[
-    {
-      "template":"header"
-    }
+    {"template":"header"}
   ],
   "main":[
     {"template":"about"},
     {"template":"features"},
+    {"template":"advantages"},
     {"template":"prices"}
   ],
   "footer":[
-    {
-      "template":"footer"
-    }
+    {"template":"footer"}
   ]
 }

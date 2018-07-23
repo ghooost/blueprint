@@ -1,13 +1,13 @@
-.about {
+.advantages {
   display:flex;
   flex-direction: column;
   justify-content: flex-flex-start;
   align-items: center;
   padding:155px 0 75px;
-  margin:0 auto;
+  margin:0;
 }
 
-.about_content {
+.advantages_content {
   width:1128px;
   list-style:none;
   padding:0;
@@ -15,17 +15,17 @@
   flex-direction: row;
   justify-content: space-between;
   flex-wrap: wrap;
-  margin:0;
+  margin:0 auto;
 }
 
-.about_title {
+.advantages_title {
   margin:0;
   width:100%;
   flex-grow: 0;
   flex-shrink: 0;
 }
 
-.about_h2 {
+.advantages_h2 {
   font-size: 35px;
   font-weight: normal;
   font-style: normal;
@@ -36,16 +36,63 @@
   margin-bottom:20px;
 }
 
-
-.about_text_column {
-  width:437px;
+.advantages_block {
   width:497px;
   flex-grow:0;
   text-align:left;
   color: #9e9e9e;
+  box-sizing: border-box;
+  padding-left:150px;
+  position:relative;
+  min-height:150px;
+  margin-bottom:75px;
 }
 
-.about_text_p {
+.advantages_block::before {
+  content:"";
+  display:block;
+  position:absolute;
+  top:30px;
+  left:0;
+  width:130px;
+  height:130px;
+  background:top left no-repeat;
+  background-size:contain;
+}
+
+.advantages_block_1::before {
+  background-image:url(afb/image22.png);
+}
+.advantages_block_2::before {
+  background-image:url(afb/image21.jpeg);
+}
+.advantages_block_3::before {
+  background-image:url(afb/image18.png);
+}
+.advantages_block_4::before {
+  background-image:url(afb/image20.png);
+}
+
+.advantages_block_5 {
+  margin-bottom:0;
+}
+
+.advantages_h3 {
+  font-size: 25px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #0c454f;
+  margin:0 0 10px 40px;
+}
+
+.advantages_ul {
+  padding-left:40px;
+}
+
+.advantages_text_p {
   font-size: 20px;
   font-weight: normal;
   font-style: normal;
@@ -54,18 +101,18 @@
   letter-spacing: normal;
 }
 
-.about_text_p:first-child{
+.advantages_text_p:first-child{
   margin-top:0;
 }
-.about_text_p:last-child {
+.advantages_text_p:last-child {
   margin-bottom:0;
 }
 
-.about_strong {
+.advantages_strong {
   color:#0c454f;
 }
 
-.about_buttons {
+.advantages_buttons {
   margin-top:45px;
   width:100%;
   flex-grow: 0;
@@ -75,7 +122,7 @@
   justify-content: center;
 }
 
-.about_text_button {
+.advantages_text_button {
   display:inline-block;
   width: 350px;
   height: 50px;
@@ -96,12 +143,12 @@
 
 }
 
-.about_text_button:hover {
+.advantages_text_button:hover {
   box-shadow: 0 9px 25px 0 #75aef0;
   background-color: #0090fb;
 }
 
-.about_text_button:active {
+.advantages_text_button:active {
   box-shadow: 0 0 0 0 #75aef0;
   background-color: #0090fb;
 }
