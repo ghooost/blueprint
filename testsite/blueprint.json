@@ -1,10 +1,11 @@
 {
-  "folder-current":"testsite",
   "folder-output":"testsite/build",
+  "folder-static":"testsite/static",
+  "site-home":"/",
   "pages":[
     {
       "file":"index.html",
-      "url":"./",
+      "url":"/",
       "name":"Home",
       "http-title":"The first page",
       "ext-data":"testsite/index.json"

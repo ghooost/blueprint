@@ -30,13 +30,13 @@
 
 
 body {
-margin:0;
-padding:0;
-font:20px/1.5 ProximaNova;
+  margin:0;
+  padding:0;
+  font:20px/1.5 ProximaNova;
 }
 
 /*COMMON*/
-.content {
+.common_content_width {
   width:1128px;
   margin:0 auto;
   position:relative;

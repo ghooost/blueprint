@@ -12,6 +12,9 @@ header {
 }
 .header_content {
   height:767px;
+  width:1128px;
+  margin:0 auto;
+  position:relative;
 }
 
 /*NOTE: header_top*/
@@ -21,32 +24,61 @@ header {
   justify-content: space-between;
   height:196px;
   box-sizing:border-box;
-  padding-top:63px;
+  padding-top:33px;
   align-items:flex-start;
+  flex-wrap: wrap;
+}
+
+.header_menu {
+  list-style:none;
+  display:flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width:100%;
+  flex-grow:0;
+  flex-shrink: 0;
+  margin:0;
+  padding:0;
 }
 
 .header_proj_logo {
   position:relative;
   flex-grow:0;
   align-content: flex-end;
-  width:126px;
-  height:38px;
-  background:url(./img/logo_wt.svg) center center;
+  xwidth:126px;
+  xheight:38px;
+  width:200px;
+  height:84px;
+  background:url(afb/sa_logo.png) center center no-repeat;
 }
 
 
 .header_right_elems {
   flex-grow:0;
   display:flex;
-  flex-direction: row;
-  justify-content: flex-end;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  height:89px;
 }
 
+.header_menu_item,
 .header_phone {
   font-size: 18px;
   flex-grow: 0;
   letter-spacing:0.3px;
   margin-right:20px;
+  text-align:right;
+  text-decoration:none;
+  color:#fff;
+}
+
+.header_phone_note {
+  display:block;
+  font-size:80%;
+}
+.header_menu_item {
+  cursor:pointer;
 }
 
 .header_demo_button {
@@ -78,14 +110,14 @@ header {
   display:block;
   width: 570px;
   height: 482px;
-  background:url(./img/223@3x.png) center center no-repeat;
+  xbackground:url(afb/223@3x.png) center center no-repeat;
   background-size:contain;
   position:absolute;
   left:586px;
   top:-5px;
 }
 
-h1 {
+.header_h1 {
   font-size: 60px;
   font-weight: normal;
   font-style: normal;
@@ -156,7 +188,7 @@ h1 {
   width:208px;
   height:30px;
   flex-grow:0;
-  background:url(./img/logo-action-white.svg) center center no-repeat;
+  background:url(afb/logo-action-white.svg) center center no-repeat;
   background-size:contain;
   cursor:pointer;
 }
@@ -172,10 +204,14 @@ header.menu {
   height:155px;
   overflow:hidden;
   background-color:rgba(256,256,256,0.8);
-  color:#000;
+}
+
+header.menu .header_menu_item,
+header.menu .header_phone {
+  color:#0c454f;
 }
 
 
 .menu .header_proj_logo {
-  background-image:url(./img/logo.svg);
+  background-image:url(afb/sa_logo.png);
 }

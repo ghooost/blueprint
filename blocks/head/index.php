@@ -35,12 +35,6 @@ if($siteData['maincss'])
 
 EOT;
 
-if($siteData['mainjs'])
-  $metaContent.=<<<EOT
-<script src="{$siteData['mainjs']}"></script>
-
-EOT;
-
 echo <<<EOT
 <meta charset="{$siteData['codepage']}"/>
 <title>{$pageData['http-title']}</title>

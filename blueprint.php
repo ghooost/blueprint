@@ -1,6 +1,30 @@
 <?php
-if(!file_exists('blueprint.json')){
-  die("blueprint.json should be at the same folder with the blueprint.php\r\n");
+$options=getArgv(
+  $argv,
+  ['-i'=>'blueprint','-build'=>'build'],
+  ['blueprint'=>'','build'=>false]
+);
+
+if(!$options['blueprint']){
+  die(<<<EOT
+Blueprint - is a static site generator written in PHP.
+
+Usage:
+php blueprint.php -- [-i <folder>] [-build]
+
+Options:
+-i <folder> : define folder from where blueprint.json will be loaded
+-build      : build final bandles
+
+More info:
+https://github.com/ghooost/blueprint
+
+EOT
+);
+}
+
+if(!file_exists($options['blueprint'].'/blueprint.json')){
+  die($options['blueprint']."/blueprint.json not found\r\n");
 };
 
 
@@ -15,17 +39,19 @@ $siteData=arrayBuild(
     'folder-lib'=>'blocks',
     'maincss'=>mkRandomName().'.css',
     'mainjs'=>mkRandomName().'.js',
-    'folder-current'=>'.',
-    'ext-data'=>'blueprint.json'
+    'folder-blueprint'=>$options['blueprint'],
+    'ext-data'=>$options['blueprint'].'/blueprint.json'
   ]
-);
+,'.');
 echo "**************loaded*************\r\n";
 
 $filesInUse=[];
 
 if(!file_exists($siteData['folder-output'])) mkdir($siteData['folder-output'],0777);
 if(file_exists($siteData['folder-output'])){
-  clearDir($siteData['folder-output']);
+
+  if($options['build']) clearDir($siteData['folder-output']);
+
   echo "Set output to: ".$siteData['folder-output']."\r\n";
 } else {
   die("Can't create ".$siteData['folder-output']."\r\n");
@@ -79,13 +105,13 @@ EOT
   };
 }
 
-if(!empty($siteData['folder-current'].'/'.$siteData['folder-static']))
-  copyDir($siteData['folder-current'].'/'.$siteData['folder-static'],$siteData['folder-output']);
+if(!empty($siteData['folder-static']))
+  copyDir($siteData['folder-static'],$siteData['folder-output']);
 
 if(count($images)){
   if(!file_exists($siteData['folder-output'].'/'.$siteData['folder-afb'])) mkdir($siteData['folder-output'].'/'.$siteData['folder-afb'],0777);
   foreach($images as $src=>$dst)
-    copy($src,$siteData['folder-output'].'/'.$siteData['folder-afb'].'/'.$dst);
+    copyFile($src,$siteData['folder-output'].'/'.$siteData['folder-afb'].'/'.$dst);
 };
 
 
@@ -119,7 +145,7 @@ function buildBlock($blockData,$pageData,$siteData,&$html,&$styles,&$js,&$images
   global $filesInUse;
 
   if(!$blockData['template']) return;
-  $folder=$siteData['folder-current'].'/'.$siteData['folder-lib'].'/'.$blockData['template'];
+  $folder=$siteData['folder-blueprint'].'/'.$siteData['folder-lib'].'/'.$blockData['template'];
   if(!file_exists($folder)){
     $folder=$siteData['folder-lib'].'/'.$blockData['template'];
     if(!file_exists($folder)){
@@ -214,11 +240,19 @@ function copyDir($src,$dst){
                 if(is_dir($src.'/'.$file)){
                   copyDir($src.'/'.$file,$dst.'/'.$file);
                 } else {
-                  copy($src.'/'.$file,$dst.'/'.$file);
+                  copyFile($src.'/'.$file,$dst.'/'.$file);
                 };
 
           closedir($dh);
       }
+  };
+}
+
+function copyFile($src,$dst){
+  if(file_exists($dst) && filesize($src)==filesize($dst)){
+    echo $src." has no changes\r\n";
+  } else {
+    copy($src,$dst);
   };
 }
 
@@ -268,4 +302,35 @@ function arrayBuild($obj){
   };
   return $ret;
 }
+
+
+function getArgv($arr,$keys,$ret){
+  $gotMM=false;
+  $curKey="";
+  foreach($arr as $v)
+    if($v=='--'){
+      $gotMM=true;
+    } else if($gotMM){
+      if(preg_match('/^-/',$v)){
+        if(empty($keys[$v])){
+          die("Unrecognized key ".$v);
+        } else {
+          $curKey=$v;
+          $ret[$keys[$curKey]]=true;
+        };
+      } else {
+        if(!$curKey){
+          die("Unrecognized param ".$v);
+        } else {
+          if($ret[$keys[$curKey]]===true){
+              $ret[$keys[$curKey]]=$v;
+          } else {
+            $ret[$keys[$curKey]].=" ".$v;
+          };
+        }
+      }
+    }
+  return $ret;
+}
+
 ?>

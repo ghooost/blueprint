@@ -14,6 +14,11 @@ foreach($pieces as $k=>$v){
   $pieces[$k]=$content;
 }
 
+  $mainjs=<<<EOT
+<script src="{$siteData['mainjs']}"></script>
+
+EOT;
+
 echo <<<EOT
 <!DOCTYPE html>
 <html>
@@ -24,6 +29,7 @@ echo <<<EOT
 {$pieces['header']}
 <main>{$pieces['main']}</main>
 {$pieces['footer']}
+{$mainjs}
 </body>
 </html>
 EOT;

@@ -9,7 +9,8 @@
     }
   ],
   "main":[
-    {"template":"fastneasy"},
+    {"template":"about"},
+    {"template":"features"},
     {"template":"prices"}
   ],
   "footer":[

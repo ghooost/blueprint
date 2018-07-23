@@ -4,8 +4,11 @@ footer {
   min-width:1128px;
 }
 
-footer .content {
+.footer_content {
   height:185px;
+  width:1128px;
+  margin:0 auto;
+  position:relative;
 }
 
 .footer_p_phone {
