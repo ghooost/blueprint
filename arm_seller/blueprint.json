@@ -1,6 +1,6 @@
 {
-  "folder-output":"testsite/build",
-  "folder-static":"testsite/static",
+  "folder-output":"arm_seller/build",
+  "folder-static":"arm_seller/static",
   "site-home":"/",
   "pages":[
     {
@@ -8,7 +8,7 @@
       "url":"/",
       "name":"Home",
       "http-title":"The first page",
-      "ext-data":"testsite/index.json"
+      "ext-data":"arm_seller/index.json"
     }
   ]
 }

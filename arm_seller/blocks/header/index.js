@@ -1,4 +1,4 @@
-(function(){
+var headerCode=function(){
   window.addEventListener('scroll', onScroll, true);
   window.addEventListener('resize', onResize, true);
   window.addEventListener('load', checkMenu, true);
@@ -28,4 +28,6 @@
     }
     header.className=headerClasses.join(" ");
   }
-}());
+};
+
+header();

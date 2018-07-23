@@ -47,6 +47,23 @@
   margin:0;
   padding:0;
   position:relative;
+  background:top left no-repeat;
+  background-size: contain;
+}
+
+.features_image_column_1 {
+  background-image: url(afb/image5.png);
+}
+.features_image_column_2 {
+  background-image: url(afb/image7.png);
+  height:250px;
+}
+.features_image_column_3 {
+  background-image: url(afb/image10.png);
+}
+.features_image_column_4 {
+  background-image: url(afb/image11.png);
+  height:250px;
 }
 
 .features_text_column {
