@@ -1,4 +1,5 @@
 # Blueprint
+
 Is a site generator that assembles static pages with blocks, collects images
 and builds CSS and JS bundles.
 
@@ -21,33 +22,51 @@ php blueprint.php -- [-i <folder>] [-build] [-watch] [-watchtime <sec>]
 Is a map of your site. Here you configure your site pages.
 ```
 {
-  "codepage":"utf-8",     //--------- site parameters
-  "pages":[               //--------- list of pages
+  "folder-output":"mysite/build", //- folder to write assembled files to
+  "folder-static":"mysite/static", //- folder with static content, see static section
+  "site-home":"/", //- site home URL
+  "pages":[ //- array of pages
     {
-      "template":"_page", //--------- page data
-      "file":"index.html",  //---------- name of file of the page
-      "url":"./",         //--------- url to the page, see .htaccess
-
-      "name":"Home page",   //--------- usually it requires for menu
-
-      "http-title":"The page title",
-      "http-description":"blabla",
-
-      "header":[
-        {"template":"header"}
-      ],
-      "main":[
-        {"template":"section_note"},
-      ],
-      "footer":[
-        {"template":"footer"}
-      ]
+      "file":"index.html",
+      "url":"/",
+      "name":"Home",
+      "http-title":"The first page",
+      "ext-data":"mysite/index.json" //- external json file, see ext-data section
     }
   ]
 }
+```
+
+## Page structure
 
 ```
+{
+  "file":"index.html", //- name of file that the page will be saved to
+  "url":"/",
+  "name":"Home", //- name, usually for menus
+  "http-title":"The first page", //- HTTP title
+//page structure  
+  "head":[  //- blocks to include into <HEAD> tag
+    {"template":"head"},
+    {"template":"localstyles"}
+  ],
+  "header":[ //- blocks to include into HEADER tag
+    {"template":"header"}
+  ],
+  "main":[ //- blocks to include into MAIN tag
+    {"template":"about"},
+    {"template":"features"},
+    {"template":"advantages"},
+    {"template":"prices"}
+  ],
+  "footer":[ //- blocks to include into FOOTER tag
+    {"template":"footer"}
+  ]
+}
+```
+
 ## Blocks
+
 Blocks - are bricks you build sites with. Each block has it's own folder inside common blocks folder:
 ```
 /blocks
@@ -62,6 +81,7 @@ Blocks - are bricks you build sites with. Each block has it's own folder inside 
 At this case footer is a block. In the footer folder we place html content (index.html), css (index.css), js (index.js) and a couple of images (1.png and 2.png).
 
 ## Dynamic vs static content
+
 You can use php generators for each part of your blocks.
 At this case we make
 ```
@@ -108,6 +128,7 @@ data of the block
 Also it has access to $styles, $js, $images arrays, where blueprint collects materials - css, js, images of your site.
 
 ## Menu
+
 Menu is an obvious sample of PHP generator. Simple menu code will look like:
 ```
 <?php
@@ -128,6 +149,7 @@ EOT;
 All standart output of your PHP generators will be inserted into final pages.
 
 ## Build folder
+
 Blueprint output generated files into build folder. After building it's
 content will be like:
 ```
@@ -142,10 +164,12 @@ content will be like:
 ```
 
 ## CSS and JS bundles
+
 CSS and JS code of used blocks are assembled into bundles named randomly to
 prevent caching
 
 ## .htaccess
+
 This is a common Apache config file we use to force Apache to use URLs
 your defined in blueprint.json instead of names of output files. So
 ```
@@ -164,3 +188,45 @@ if your pageData like
 }
 ```
 Of course, you should upload content of your build folder to www.yoursite.com first.
+
+## Static folder
+
+If you define a static folder (folder-static option in blueprint.json) -
+it's content will be copied to build folder.
+
+```
+mysite/
+  static/
+    fonts/
+      f.font
+    1.png
+    1.png
+```
+will be copied to the build folder as:
+```
+mysite/
+  build/
+    fonts/
+      f.font
+    1.png
+    1.png
+```
+
+## Buld vs development mode
+
+In development mode blueprint.php do not clear the build folder before each
+build. It checks files and copies changed ones only. Also it saves main CSS
+into index.css and main JS into index.js files.
+
+In the build mode blueprint.php removes everything before the building.
+It copies all required files into build folder and generates main CSS/main JS
+with random names to avoid possible cache problems.
+
+Build mode can be switched on with -build option.
+
+## Watch mode
+
+In watch mode blueprint.php reviews working folder every N seconds and
+rebuild a site with command line options if something was changed.
+Watch mode can be switched on with -watch option.
+You can define timeout to review changes with -watchtime option. Default is 5 sec.
