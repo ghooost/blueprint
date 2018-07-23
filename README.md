@@ -5,10 +5,19 @@ and builds CSS and JS bundles.
 ## Usage
 
 ```
-php blueprint.php
+php blueprint.php -- [-i <folder>] [-build] [-watch] [-watchtime <sec>]
 ```
 
+## Command line parameters
+
+**-i <folder>** define folder from where blueprint.json will be loaded
+**-build** build final bandles
+**-watch** watch -i folder
+**-watchtime <sec>** watch timeout in seconds
+
+
 ## Blueprint.json
+
 Is a map of your site. Here you configure your site pages.
 ```
 {

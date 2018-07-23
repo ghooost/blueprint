@@ -1,4 +1,4 @@
-var headerCode=function(){
+var header=function(){
   window.addEventListener('scroll', onScroll, true);
   window.addEventListener('resize', onResize, true);
   window.addEventListener('load', checkMenu, true);

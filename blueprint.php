@@ -1,20 +1,23 @@
 <?php
+$filesInUse="";
 $options=getArgv(
   $argv,
-  ['-i'=>'blueprint','-build'=>'build'],
-  ['blueprint'=>'','build'=>false]
+  ['-i'=>'blueprint','-build'=>'build',"-watch"=>'watch',"-watchtime"=>'watchtime'],
+  ['blueprint'=>'','build'=>false,"watch"=>false,'watchtime'=>5]
 );
 
-if(!$options['blueprint']){
+if(!$options['blueprint'] && !$options['watch']){
   die(<<<EOT
 Blueprint - is a static site generator written in PHP.
 
 Usage:
-php blueprint.php -- [-i <folder>] [-build]
+php blueprint.php -- [-i <folder>] [-build] [-watch] [-watchtime <sec>]
 
 Options:
--i <folder> : define folder from where blueprint.json will be loaded
--build      : build final bandles
+-i <folder>       : define folder from where blueprint.json will be loaded
+-build            : build final bandles
+-watch            : watch -i folder
+-watchtime <sec>  : watch timeout in seconds
 
 More info:
 https://github.com/ghooost/blueprint
@@ -23,98 +26,145 @@ EOT
 );
 }
 
-if(!file_exists($options['blueprint'].'/blueprint.json')){
-  die($options['blueprint']."/blueprint.json not found\r\n");
-};
-
-
-echo "**************blueprints loading*************\r\n";
-$siteData=arrayBuild(
-  [
-    'codepage'=>'utf-8',
-    'pageTemplate'=>'_page',
-    'folder-output'=>'build',
-    'folder-static'=>'static',
-    'folder-afb'=>'afb',
-    'folder-lib'=>'blocks',
-    'maincss'=>mkRandomName().'.css',
-    'mainjs'=>mkRandomName().'.js',
-    'folder-blueprint'=>$options['blueprint'],
-    'ext-data'=>$options['blueprint'].'/blueprint.json'
-  ]
-,'.');
-echo "**************loaded*************\r\n";
-
-$filesInUse=[];
-
-if(!file_exists($siteData['folder-output'])) mkdir($siteData['folder-output'],0777);
-if(file_exists($siteData['folder-output'])){
-
-  if($options['build']) clearDir($siteData['folder-output']);
-
-  echo "Set output to: ".$siteData['folder-output']."\r\n";
+if($options['watch']){
+  //do watch!
+  if($options['blueprint']){
+    $folderToWatch=$options['blueprint'];
+  } else {
+    $folderToWatch=".";
+  };
+  doWatch($folderToWatch,$options);
 } else {
-  die("Can't create ".$siteData['folder-output']."\r\n");
-};
-
-$styles=[];
-$js=[];
-$images=[];
-$rules=[];
-
-
-if(!empty($siteData['pages']) && count($siteData['pages']))
-    foreach($siteData['pages'] as $page)
-      buildPage($page,$siteData,$styles,$js,$images,$rules);
-
-
-$f=fopen($siteData['folder-output'].'/'.$siteData['maincss'],'w');
-if($f){
-  fputs($f,join("\r\n",$styles));
-  fclose($f);
-};
-
-$f=fopen($siteData['folder-output'].'/'.$siteData['mainjs'],'w');
-if($f){
-  fputs($f,join("\r\n",$js));
-  fclose($f);
-};
-
-if(count($rules)){
-  $hta="";
-  foreach($rules as $url=>$file){
-    $url=preg_replace('/\/+$/','',$url);
-    $hta.='RewriteRule ^'.$url.'(\/)*$ '.$file.' [L]'."\r\n";
-  };
-
-  if($hta){
-    $f=fopen($siteData['folder-output'].'/.htaccess','w');
-    if($f){
-      fputs($f,<<<EOT
-  AddDefaultCharset {$siteData['codepage']}
-
-  RewriteEngine On
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-
-  $hta
-EOT
-      );
-      fclose($f);
-    };
-  };
+  doBuilding($options);
 }
 
-if(!empty($siteData['folder-static']))
-  copyDir($siteData['folder-static'],$siteData['folder-output']);
+function doWatch($folder,$options){
+  $hash="";
+  while(true){
+    if(!file_exists($folder)){
+      die("Watch can't see ".$folder);
+    };
+    $newHash=md5(listFolder($folder));
+    if($newHash!=$hash){
+      doBuilding($options);
+      $hash=md5(listFolder($folder));
+    } else {
+//      echo "No changes\r\n";
+    };
+    sleep(empty($options['watchtime'])?5:$options['watchtime']);
+  }
+}
 
-if(count($images)){
-  if(!file_exists($siteData['folder-output'].'/'.$siteData['folder-afb'])) mkdir($siteData['folder-output'].'/'.$siteData['folder-afb'],0777);
-  foreach($images as $src=>$dst)
-    copyFile($src,$siteData['folder-output'].'/'.$siteData['folder-afb'].'/'.$dst);
-};
+function listFolder($src){
+  $ret="";
+  if (file_exists($src) && is_dir($src)) {
+      if ($dh = opendir($src)) {
+          while (($file = readdir($dh)) !== false)
+              if($file!='.' && $file!='..')
+                if(is_dir($src.'/'.$file)){
+                  $ret.=listFolder($src.'/'.$file,$dst.'/'.$file);
+                } else {
+                  $f=$src.'/'.$file;
+                  $ret.='|'.$f.'|'.filesize($f).'|'.filemtime($f).'|';
+                };
+          closedir($dh);
+      }
+  };
+  return $ret;
+}
+
+function doBuilding($options){
+  global $filesInUse;
+  if(!file_exists($options['blueprint'].'/blueprint.json')){
+    die($options['blueprint']."/blueprint.json not found\r\n");
+  };
+
+  echo "**************blueprints loading*************\r\n";
+  $siteData=arrayBuild(
+    [
+      'codepage'=>'utf-8',
+      'pageTemplate'=>'_page',
+      'folder-output'=>'build',
+      'folder-static'=>'static',
+      'folder-afb'=>'afb',
+      'folder-lib'=>'blocks',
+      'maincss'=>$options['build']?mkRandomName().'.css':'index.css',
+      'mainjs'=>$options['build']?mkRandomName().'.js':'index.js',
+      'folder-blueprint'=>$options['blueprint'],
+      'ext-data'=>$options['blueprint'].'/blueprint.json'
+    ],".");
+  echo "**************loaded*************\r\n";
+
+  $filesInUse=[];
+
+  if(!file_exists($siteData['folder-output'])) mkdir($siteData['folder-output'],0777);
+  if(file_exists($siteData['folder-output'])){
+
+    if($options['build']) clearDir($siteData['folder-output']);
+
+    echo "Set output to: ".$siteData['folder-output']."\r\n";
+  } else {
+    die("Can't create ".$siteData['folder-output']."\r\n");
+  };
+
+  $styles=[];
+  $js=[];
+  $images=[];
+  $rules=[];
 
 
+  if(!empty($siteData['pages']) && count($siteData['pages']))
+      foreach($siteData['pages'] as $page)
+        buildPage($page,$siteData,$styles,$js,$images,$rules);
+
+
+  $f=fopen($siteData['folder-output'].'/'.$siteData['maincss'],'w');
+  if($f){
+    fputs($f,join("\r\n",$styles));
+    fclose($f);
+  };
+
+  $f=fopen($siteData['folder-output'].'/'.$siteData['mainjs'],'w');
+  if($f){
+    fputs($f,join("\r\n",$js));
+    fclose($f);
+  };
+
+  if(count($rules)){
+    $hta="";
+    foreach($rules as $url=>$file){
+      $url=preg_replace('/\/+$/','',$url);
+      $hta.='RewriteRule ^'.$url.'(\/)*$ '.$file.' [L]'."\r\n";
+    };
+
+    if($hta){
+      $f=fopen($siteData['folder-output'].'/.htaccess','w');
+      if($f){
+        fputs($f,<<<EOT
+    AddDefaultCharset {$siteData['codepage']}
+
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    $hta
+EOT
+        );
+        fclose($f);
+      };
+    };
+  }
+
+  if(!empty($siteData['folder-static']))
+    copyDir($siteData['folder-static'],$siteData['folder-output']);
+
+  if(count($images)){
+    if(!file_exists($siteData['folder-output'].'/'.$siteData['folder-afb'])) mkdir($siteData['folder-output'].'/'.$siteData['folder-afb'],0777);
+    foreach($images as $src=>$dst)
+      copyFile($src,$siteData['folder-output'].'/'.$siteData['folder-afb'].'/'.$dst);
+  };
+
+}
 
 function buildPage($pageData,$siteData,&$styles,&$js,&$images,&$rules){
   if(empty($siteData['def-page'])) $siteData['def-page']=[];
@@ -250,7 +300,7 @@ function copyDir($src,$dst){
 
 function copyFile($src,$dst){
   if(file_exists($dst) && filesize($src)==filesize($dst)){
-    echo $src." has no changes\r\n";
+    //echo $src." has no changes\r\n";
   } else {
     copy($src,$dst);
   };
