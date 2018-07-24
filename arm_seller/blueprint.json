@@ -2,6 +2,8 @@
   "folder-output":"arm_seller/build",
   "folder-static":"arm_seller/static",
   "site-home":"/",
+  "maincss":"about.css",
+  "mainjs":"about.js",
   "pages":[
     {
       "file":"index.html",
