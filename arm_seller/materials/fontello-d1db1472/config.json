@@ -1,0 +1,34 @@
+{
+  "name": "social",
+  "css_prefix_text": "icon-",
+  "css_use_suffix": false,
+  "hinting": true,
+  "units_per_em": 1000,
+  "ascent": 850,
+  "glyphs": [
+    {
+      "uid": "34cfa573b7d6c70c298dfad4cac4d466",
+      "css": "vkontakte-rect",
+      "code": 59392,
+      "src": "elusive"
+    },
+    {
+      "uid": "gq8m9lqx2hhwxf7rz30adbr37rthzirq",
+      "css": "twitter-rect",
+      "code": 62228,
+      "src": "modernpics"
+    },
+    {
+      "uid": "03cmb4p7niofd11yos3fpjjuvvpy7mji",
+      "css": "facebook-rect",
+      "code": 59393,
+      "src": "modernpics"
+    },
+    {
+      "uid": "b3ccbe22f1b25b3f3ecfd7096a7c9187",
+      "css": "odnoklassniki-rect",
+      "code": 62052,
+      "src": "fontawesome"
+    }
+  ]
+}
