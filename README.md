@@ -11,13 +11,15 @@ php blueprint.php -- [-i <folder>] [-build] [-watch] [-watchtime <sec>]
 
 ## Command line parameters
 
-**-i folder** define folder from where blueprint.json will be loaded
+**-i FOLDER** define folder from where blueprint.json will be loaded
 
-**-build** build final bandles
+**-mode MODE** set mode, can be build, dev or any other custom mode, see modes
+
+**-build** build final bundles, shortcut for **-mode build**
 
 **-watch** watch -i folder
 
-**-watchtime sec** watch timeout in seconds
+**-watchtime SEC** watch timeout in seconds
 
 
 ## Blueprint.json
@@ -77,11 +79,27 @@ Blocks - are bricks you build sites with. Each block has it's own folder inside 
     /afb        //---- place images here
       1.png
       2.png
-    index.js    //---- can be js.php
-    index.css   //---- can be css.php
-    index.html  //---- can be index.php
+    index.js    
+    index.css   
+    index.html  
 ```
 At this case footer is a block. In the footer folder we place html content (index.html), css (index.css), js (index.js) and a couple of images (1.png and 2.png).
+
+## Modes
+
+Mode defines how blueprint will seek for files in your folders.
+
+The order is like:
+
+```
+1. [mode]_[type].php
+2. [mode].[type]
+3. [type].php
+4. index.[type]
+```
+So, in build mode blueprint will seek for build_css.php, if no one - for build.css, then for css.php, and if no build_css.php, build.css and css.php found - for index.css.
+
+Thus, you can place different block materials for different modes.
 
 ## Dynamic vs static content
 
@@ -215,21 +233,20 @@ mysite/
     1.png
 ```
 
-## Buld vs development mode
+## Buld is a special mode
 
-In development mode blueprint.php do not clear the build folder before each
-build. It checks files and copies changed ones only. Also it saves main CSS
-into index.css and main JS into index.js files.
+In build mode blueprint.php removes everything from the output folder before the building.
 
-In the build mode blueprint.php removes everything before the building.
-It copies all required files into build folder and generates main CSS/main JS
+It copies all required files into output folder and [by default] generates main CSS/main JS
 with random names to avoid possible cache problems.
 
-Build mode can be switched on with -build option.
+Build mode can be switched on with **-build** option or with **-mode build**.
 
 ## Watch mode
 
-In watch mode blueprint.php reviews working folder every N seconds and
-rebuild a site with command line options if something was changed.
-Watch mode can be switched on with -watch option.
-You can define timeout to review changes with -watchtime option. Default is 5 sec.
+In watch state blueprint.php reviews working folder every N seconds and
+rebuild a site if something inside the watched folders was changed.
+
+Watch mode can be switched on with **-watch** option.
+
+You can define timeout to review changes with **-watchtime** option. Default is 5 sec.

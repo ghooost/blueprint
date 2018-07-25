@@ -2,8 +2,8 @@
 $filesInUse="";
 $options=getArgv(
   $argv,
-  ['-i'=>'blueprint','-build'=>'build',"-watch"=>'watch',"-watchtime"=>'watchtime'],
-  ['blueprint'=>'','build'=>false,"watch"=>false,'watchtime'=>5]
+  ['-i'=>'blueprint','-build'=>'build',"-watch"=>'watch',"-watchtime"=>'watchtime',"-mode"=>"mode","-debug"=>"debug"],
+  ['blueprint'=>'','build'=>false,"watch"=>false,'watchtime'=>5,"mode"=>"","debug"=>false]
 );
 
 if(!$options['blueprint'] && !$options['watch']){
@@ -15,7 +15,8 @@ php blueprint.php -- [-i <folder>] [-build] [-watch] [-watchtime <sec>]
 
 Options:
 -i <folder>       : define folder from where blueprint.json will be loaded
--build            : build final bandles
+-build            : build final bandles, shortcut for -mode build
+-mode <mode>      : mode, can be dev, build or any other custom mode
 -watch            : watch -i folder
 -watchtime <sec>  : watch timeout in seconds
 
@@ -25,6 +26,14 @@ https://github.com/ghooost/blueprint
 EOT
 );
 }
+
+if($options['build']){
+  $options['mode']='build';
+};
+
+if(empty($options['mode'])){
+  $options['mode']='dev';
+};
 
 if($options['watch']){
   //do watch!
@@ -84,13 +93,22 @@ function doBuilding($options){
     [
       'codepage'=>'utf-8',
       'pageTemplate'=>'_page',
-      'folder-output'=>'build',
-      'folder-static'=>'static',
+
+      'blueprint'=>$options['blueprint'],
+
+      'folder-output'=>$options['blueprint'].'/build',
+      'folder-static'=>$options['blueprint'].'/static',
+
       'folder-afb'=>'afb',
       'folder-lib'=>'blocks',
-      'maincss'=>$options['build']?mkRandomName().'.css':'index.css',
-      'mainjs'=>$options['build']?mkRandomName().'.js':'index.js',
-      'folder-blueprint'=>$options['blueprint'],
+
+      'options'=>$options,
+
+      'maincss'=>'index.css',
+      'mainjs'=>'index.js',
+      'build_maincss'=>mkRandomName().'.css',
+      'build_mainjs'=>mkRandomName().'.js',
+
       'ext-data'=>$options['blueprint'].'/blueprint.json'
     ],".");
   echo "**************loaded*************\r\n";
@@ -100,7 +118,7 @@ function doBuilding($options){
   if(!file_exists($siteData['folder-output'])) mkdir($siteData['folder-output'],0777);
   if(file_exists($siteData['folder-output'])){
 
-    if($options['build']) clearDir($siteData['folder-output']);
+    if($options['mode']=='build') clearDir($siteData['folder-output']);
 
     echo "Set output to: ".$siteData['folder-output']."\r\n";
   } else {
@@ -118,13 +136,15 @@ function doBuilding($options){
         buildPage($page,$siteData,$styles,$js,$images,$rules);
 
 
-  $f=fopen($siteData['folder-output'].'/'.$siteData['maincss'],'w');
+  $fname=!empty($siteData[$options['mode'].'_maincss'])?$siteData[$options['mode'].'_maincss']:$siteData['maincss'];
+  $f=fopen($siteData['folder-output'].'/'.$fname,'w');
   if($f){
     fputs($f,join("\r\n",$styles));
     fclose($f);
   };
 
-  $f=fopen($siteData['folder-output'].'/'.$siteData['mainjs'],'w');
+  $fname=!empty($siteData[$options['mode'].'_mainjs'])?$siteData[$options['mode'].'_mainjs']:$siteData['mainjs'];
+  $f=fopen($siteData['folder-output'].'/'.$fname,'w');
   if($f){
     fputs($f,join("\r\n",$js));
     fclose($f);
@@ -190,12 +210,12 @@ function buildPage($pageData,$siteData,&$styles,&$js,&$images,&$rules){
   }
 }
 
-
 function buildBlock($blockData,$pageData,$siteData,&$html,&$styles,&$js,&$images){
   global $filesInUse;
 
   if(!$blockData['template']) return;
-  $folder=$siteData['folder-blueprint'].'/'.$siteData['folder-lib'].'/'.$blockData['template'];
+  $folder=$siteData['blueprint'].'/'.$siteData['folder-lib'].'/'.$blockData['template'];
+
   if(!file_exists($folder)){
     $folder=$siteData['folder-lib'].'/'.$blockData['template'];
     if(!file_exists($folder)){
@@ -203,50 +223,36 @@ function buildBlock($blockData,$pageData,$siteData,&$html,&$styles,&$js,&$images
     };
   };
 
-  ob_start();
-  if(file_exists($folder.'/css.php')){
-    require $folder.'/css.php';
-    $content=ob_get_contents();
-    $key=md5($content);
-    if(empty($filesInUse[$key])){
-      $styles[]=$content;
-      $filesInUse[$key]=TRUE;
-    }
-  } else if(file_exists($folder.'/index.css')){
-    if(empty($filesInUse[$folder.'/index.css'])){
-      readfile($folder.'/index.css');
-      $filesInUse[$folder.'/index.css']=TRUE;
-      $styles[]=ob_get_contents();
-    }
+  $content=getContent([
+    $folder.'/'.$siteData['options']['mode'].'_css.php',
+    $folder.'/'.$siteData['options']['mode'].'.css',
+    $folder.'/css.php',
+    $folder.'/index.css'
+  ],$blockData,$pageData,$siteData,$html,$styles,$js,$images);
+  $key=md5($content);
+  if(empty($filesInUse[$key])){
+    $styles[]=$content;
+    $filesInUse[$key]=TRUE;
   };
-  ob_end_clean();
 
-  ob_start();
-  if(file_exists($folder.'/js.php')){
-    require $folder.'/js.php';
-    $content=ob_get_contents();
-    $key=md5($content);
-    if(empty($filesInUse[$key])){
-      $js[]=$content;
-      $filesInUse[$key]=TRUE;
-    }
-  } else if(file_exists($folder.'/index.js')){
-    if(empty($filesInUse[$folder.'/index.js'])){
-      readfile($folder.'/index.js');
-      $filesInUse[$folder.'/index.js']=TRUE;
-      $js[]=ob_get_contents();
-    }
+  $content=getContent([
+    $folder.'/'.$siteData['options']['mode'].'_js.php',
+    $folder.'/'.$siteData['options']['mode'].'.js',
+    $folder.'/js.php',
+    $folder.'/index.js'
+  ],$blockData,$pageData,$siteData,$html,$styles,$js,$images);
+  $key=md5($content);
+  if(empty($filesInUse[$key])){
+    $js[]=$content;
+    $filesInUse[$key]=TRUE;
   };
-  ob_end_clean();
 
-  ob_start();
-  if(file_exists($folder.'/index.php')){
-    require $folder.'/index.php';
-  } else if(file_exists($folder.'/index.html')){
-    readfile($folder.'/index.html');
-  };
-  $html.=ob_get_contents();
-  ob_end_clean();
+  $html.=getContent([
+    $folder.'/'.$siteData['options']['mode'].'_html.php',
+    $folder.'/'.$siteData['options']['mode'].'.html',
+    $folder.'/index.php',
+    $folder.'/index.html'
+  ],$blockData,$pageData,$siteData,$html,$styles,$js,$images);
 
 
   if (is_dir($folder.'/'.$siteData['folder-afb'])) {
@@ -262,6 +268,23 @@ function buildBlock($blockData,$pageData,$siteData,&$html,&$styles,&$js,&$images
           closedir($dh);
       }
   };
+}
+
+function getContent($filenames,$blockData,$pageData,$siteData,&$html,&$styles,&$js,&$images){
+  foreach($filenames as $file){
+    if(file_exists($file)){
+      ob_start();
+      if(preg_match('/\.php$/i',$file)){
+        require $file;
+      } else {
+        readfile($file);
+      };
+      $ret=ob_get_contents();
+      ob_end_clean();
+      return $ret;
+    };
+  }
+  return "";
 }
 
 function clearDir($dir){
@@ -329,6 +352,27 @@ function arrayAssign(...$args){
   return $ret;
 }
 
+function chPaths($data,$path){
+  $ret=[];
+  foreach($data as $k=>$v)
+    if(is_array($v)){
+      $ret[$k]=chPaths($v,$path);
+    } else {
+      $ret[$k]=preg_replace('/^\.\//',$path.'/',$v);
+    }
+  return $ret;
+}
+
+function loadExtData($fname){
+  if(file_exists($fname)){
+    $path=dirname($fname);
+    $data=json_decode(join("",file($fname)),true);
+    return chPaths($data,$path);
+  } else {
+    die("No ".$fname." exists\r\n");
+  }
+}
+
 function arrayBuild($obj){
   $ret=[];
   if(is_array($obj)){
@@ -336,13 +380,14 @@ function arrayBuild($obj){
       $fname=$obj['ext-data'];
       if(file_exists($fname)){
         echo $fname." loaded"."\r\n";
-        $data=json_decode(join("",file($fname)),true);
+        $data=loadExtData($fname);
         unset($obj['ext-data']);
         $obj=arrayAssign($obj,$data);
       } else {
         die("No file exists: ".$obj['ext-data']."\r\n");
       };
     };
+
     foreach($obj as $k=>$v)
       if(is_array($v)){
         $ret[$k]=arrayBuild($v);

@@ -1,16 +1,14 @@
 {
-  "folder-output":"arm_seller/build",
-  "folder-static":"arm_seller/static",
   "site-home":"/",
-  "maincss":"about.css",
-  "mainjs":"about.js",
+  "build_maincss":"about.css",
+  "build_mainjs":"about.js",
   "pages":[
     {
       "file":"index.html",
       "url":"/",
       "name":"Home",
       "http-title":"Ассистент поставщика",
-      "ext-data":"arm_seller/index.json"
+      "ext-data":"./index.json"
     }
   ]
 }
