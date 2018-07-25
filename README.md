@@ -11,26 +11,25 @@ php blueprint.php -- [-i <folder>] [-build] [-watch] [-watchtime <sec>]
 
 ## Command line parameters
 
-**-i FOLDER** define folder from where blueprint.json will be loaded
+**-i FOLDER** - define folder from where blueprint.json will be loaded
 
-**-mode MODE** set mode, can be build, dev or any other custom mode, see modes
+**-mode MODE** - set mode, can be build, dev or any other custom mode, see modes
 
-**-build** build final bundles, shortcut for **-mode build**
+**-build** - build final bundles, shortcut for **-mode build**
 
-**-watch** watch -i folder
+**-watch** - watch -i folder
 
-**-watchtime SEC** watch timeout in seconds
+**-watchtime SEC** - watch timeout in seconds
 
 
 ## Blueprint.json
 
-Is a map of your site. Here you configure your site pages.
+Is a data of your site and pages.
 ```
 {
-  "folder-output":"mysite/build", //- folder to write assembled files to
-  "folder-static":"mysite/static", //- folder with static content, see static section
-  "site-home":"/", //- site home URL
-  "pages":[ //- array of pages
+  "folder-output":"folder_to_write_bundles_to",
+  "folder-static":"folder with static content",
+  "pages":[
     {
       "file":"index.html",
       "url":"/",
@@ -41,34 +40,116 @@ Is a map of your site. Here you configure your site pages.
   ]
 }
 ```
+It contains both your site and pages data. Please notice **ext-data** fields.
+These are link to an external json file that will be loaded and placed instead of **ext-data**.
+```
+/* users/jane.json */
+{
+  "name":"Jane",
+  "age":"42",
+  "photo":"./photos/jane.png"
+}
+/* Include at */
+{
+  "userid":1,
+  "ext-data":"users/jane.json"
+}
+/* And finally */
+{
+  "userid":1,
+  "name":"Jane",
+  "age":"42"
+  "photo":"users/photos/jane.png"
+}
+```
+Fields values started with "./" will be patched with path of file that contain them.
 
-## Page structure
+
+## Site data
+
+All fields except **pages** are optional.
+
+### Important fields
+
+**pages** - is an array of pages of your site
+
+### Optional fields
+
+**codepage** - codepage of the site pages. By defaul is utf-8 and I don't see any reason to change it
+
+**pageTemplate** - is a "root" page generator, that takes page data - all these
+head, footer, main, header sections and form a html page from them. I provide
+a default generator, but of course you can change it.
+
+**blueprint** - that's comes from -blueprint command line option
+
+**folder-output** - folder to output bundles, default is **blueprint**/build
+
+**folder-static** - folder with static content, default is **blueprint**/static
+
+**folder-afb** - folder with static content inside blocks, default is afb
+
+**folder-lib** - folder with blocks, default is block
+
+**maincss** - name of final CSS bundle, default is index.css, you can use **mode-maincss** to set separate name for a mode
+
+**mainjs** - name of final JS bundle, default is index.js, you can use
+**mode-maincss** to set separate name for a mode
+
+**afb-url** - real URL to afb folder, all afb/ substrings inside your files will be patched with this URL, also can be in form **mode-afb-url** to set the URL for a mode
+
+**css-afb-url** - real URL to afb folder from the main CSS, all afb/ substrings inside your CSS will be patched with this URL, also can be in form **mode-css-afb-url** to set the URL for a mode
+
+## Page data
+
+It's something like:
 
 ```
 {
-  "file":"index.html", //- name of file that the page will be saved to
-  "url":"/",
-  "name":"Home", //- name, usually for menus
-  "http-title":"The first page", //- HTTP title
-//page structure  
-  "head":[  //- blocks to include into <HEAD> tag
+  "file":"page_file_name.html",
+  "url":"/url_to_page",
+  "name":"Page name you can in menu, so on",
+  "http-title":"HTTP title",
+
+  // blocks to include into <HEAD> tag
+
+  "head":[  
     {"template":"head"},
     {"template":"localstyles"}
   ],
-  "header":[ //- blocks to include into HEADER tag
+
+  // blocks to include before <MAIN> tag
+
+  "header":[
     {"template":"header"}
   ],
-  "main":[ //- blocks to include into MAIN tag
+
+  // blocks to include into <MAIN> tag
+
+  "main":[
     {"template":"about"},
-    {"template":"features"},
-    {"template":"advantages"},
-    {"template":"prices"}
+    {"template":"features"}
   ],
-  "footer":[ //- blocks to include into FOOTER tag
+
+  // blocks to include after <MAIN> tag
+
+  "footer":[
     {"template":"footer"}
   ]
 }
 ```
+
+In general - you can put there any data you need and process it inside your blocks and pages. But out of box blueprint configures to understand following
+fields:
+
+### Important fields
+
+**file** - name of the page file, index.html f.e.
+
+**url** - url to the page, /index/ f.e.. It will be included into .htaccess to map your urls and files
+
+etc.
+
 
 ## Blocks
 

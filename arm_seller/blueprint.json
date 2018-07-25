@@ -1,7 +1,8 @@
 {
-  "site-home":"/",
-  "build_maincss":"about.css",
-  "build_mainjs":"about.js",
+  "test-afb-url":"test/afb/",
+  "test-css-afb-url":"test/afb/",
+  "build-maincss":"about.css",
+  "build-mainjs":"about.js",
   "pages":[
     {
       "file":"index.html",

@@ -106,8 +106,8 @@ function doBuilding($options){
 
       'maincss'=>'index.css',
       'mainjs'=>'index.js',
-      'build_maincss'=>mkRandomName().'.css',
-      'build_mainjs'=>mkRandomName().'.js',
+      'build-maincss'=>mkRandomName().'.css',
+      'build-mainjs'=>mkRandomName().'.js',
 
       'ext-data'=>$options['blueprint'].'/blueprint.json'
     ],".");
@@ -135,25 +135,40 @@ function doBuilding($options){
       foreach($siteData['pages'] as $page)
         buildPage($page,$siteData,$styles,$js,$images,$rules);
 
+  $mode=$options['mode'];
 
-  $fname=!empty($siteData[$options['mode'].'_maincss'])?$siteData[$options['mode'].'_maincss']:$siteData['maincss'];
+  $fname=firstNotEmpty($siteData,[$mode.'-maincss','maincss']);
   $f=fopen($siteData['folder-output'].'/'.$fname,'w');
   if($f){
-    fputs($f,join("\r\n",$styles));
+    $body=join("\r\n",$styles);
+
+    $ch=firstNotEmpty($siteData,[$mode.'-css-afb-url','css-afb-url',$mode.'-afb-url','afb-url']);
+    if($ch){
+      $pattern=preg_replace('/\/$/','',$siteData['folder-afb']);
+      $body=preg_replace('/'.preg_quote($pattern).'\//',$ch,$body);
+    };
+    fputs($f,$body);
     fclose($f);
   };
 
-  $fname=!empty($siteData[$options['mode'].'_mainjs'])?$siteData[$options['mode'].'_mainjs']:$siteData['mainjs'];
+  $fname=firstNotEmpty($siteData,[$mode.'-mainjs','mainjs']);
   $f=fopen($siteData['folder-output'].'/'.$fname,'w');
   if($f){
-    fputs($f,join("\r\n",$js));
+    $body=join("\r\n",$js);
+
+    $ch=firstNotEmpty($siteData,[$mode.'-js-afb-url','js-afb-url',$mode.'-afb-url','afb-url']);
+    if($ch){
+      $pattern=preg_replace('/\/$/','',$siteData['folder-afb']);
+      $body=preg_replace('/'.preg_quote($pattern).'\//',$ch,$body);
+    };
+    fputs($f,$body);
     fclose($f);
   };
 
   if(count($rules)){
     $hta="";
     foreach($rules as $url=>$file){
-      $url=preg_replace('/\/+$/','',$url);
+      $url=preg_replace(['/^\/+/','/\/+$/'],['',''],$url);
       $hta.='RewriteRule ^'.$url.'(\/)*$ '.$file.' [L]'."\r\n";
     };
 
@@ -190,10 +205,12 @@ function buildPage($pageData,$siteData,&$styles,&$js,&$images,&$rules){
   if(empty($siteData['def-page'])) $siteData['def-page']=[];
   $pageData=arrayAssign($siteData['def-page'],$pageData);
 
+  if($cURL && !preg_match('/\/$/',$cURL)) $cURL.='/';
+
   if(!empty($pageData['url']) && $pageData['url']!=$pageData['file']){
     $rules[$pageData['url']]=$pageData['file'];
   } else {
-    $rules['/']=$pageData['file'];
+    $rules[$cURL]=$pageData['file'];
   };
 
   if(empty($pageData['template']))
@@ -205,6 +222,14 @@ function buildPage($pageData,$siteData,&$styles,&$js,&$images,&$rules){
   $fileName=$pageData['file']?$pageData['file']:md5(json_encode($pageData)).".html";
   $f=fopen($siteData['folder-output'].'/'.$fileName,"w");
   if($f){
+    $mode=$siteData['options']['mode'];
+    $ch=firstNotEmpty($siteData,[$mode.'-afb-url','afb-url']);
+    if($ch){
+      $pattern=preg_replace('/\/$/','',$siteData['folder-afb']);
+      $pageBody=preg_replace('/'.preg_quote($pattern).'\//',$ch,$pageBody);
+    };
+
+
     fputs($f,$pageBody);
     fclose($f);
   }
@@ -268,6 +293,13 @@ function buildBlock($blockData,$pageData,$siteData,&$html,&$styles,&$js,&$images
           closedir($dh);
       }
   };
+}
+
+function firstNotEmpty($data,$keys,$def=''){
+    foreach($keys as $key)
+      if(!empty($data[$key]))
+        return $data[$key];
+    return $def;
 }
 
 function getContent($filenames,$blockData,$pageData,$siteData,&$html,&$styles,&$js,&$images){
