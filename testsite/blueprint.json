@@ -1,0 +1,21 @@
+{
+  "maincss":"index.css",
+  "mainjs":"index.js",
+  "pages":[
+    {
+      "file":"index.html",
+      "url":"/",
+      "name":"Home",
+      "http-title":"Test page",
+      "head":[
+        {"template":"head"}
+      ],
+      "main":[
+        {
+          "template":"test",
+          "message":"This is a message for a test block!"
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 <?php
+
 $filesInUse="";
 $options=getArgv(
   $argv,
@@ -133,14 +134,21 @@ function doBuilding($options){
   $rules=[];
 
 
-  if(!empty($siteData['pages']) && count($siteData['pages']))
+  if(!empty($siteData['pages']) && count($siteData['pages'])){
       foreach($siteData['pages'] as $page)
         buildPage($page,$siteData,$styles,$js,$images,$rules);
+  } else {
+    echo "Warning: there are no pages?\r\n";
+    print_r($siteData);
+  }
+
 
   $mode=$options['mode'];
 
   $fname=firstNotEmpty($siteData,[$mode.'-maincss','maincss']);
   $f=fopen($siteData['folder-output'].'/'.$fname,'w');
+
+echo $siteData['folder-output'].'/'.$fname;
   if($f){
     $body=join("\r\n",$styles);
 
@@ -221,7 +229,10 @@ function buildPage($pageData,$siteData,&$styles,&$js,&$images,&$rules){
   $pageBody="";
   buildBlock($pageData,$pageData,$siteData,$pageBody,$styles,$js,$images);
 
+
   $fileName=$pageData['file']?$pageData['file']:md5(json_encode($pageData)).".html";
+
+
   $f=fopen($siteData['folder-output'].'/'.$fileName,"w");
   if($f){
     $mode=$siteData['options']['mode'];
@@ -305,6 +316,7 @@ function firstNotEmpty($data,$keys,$def=''){
 }
 
 function getContent($filenames,$blockData,$pageData,$siteData,&$html,&$styles,&$js,&$images){
+
   foreach($filenames as $file){
     if(file_exists($file)){
       ob_start();
@@ -388,6 +400,7 @@ function arrayAssign(...$args){
 
 function chPaths($data,$path){
   $ret=[];
+  if(count($data))
   foreach($data as $k=>$v)
     if(is_array($v)){
       $ret[$k]=chPaths($v,$path);
@@ -398,9 +411,14 @@ function chPaths($data,$path){
 }
 
 function loadExtData($fname){
+  echo "Load $fname\r\n";
+
   if(file_exists($fname)){
     $path=dirname($fname);
     $data=json_decode(join("",file($fname)),true);
+    if(!$data){
+      echo "Warning: there is no valid data in $fname\r\n";
+    };
     return chPaths($data,$path);
   } else {
     die("No ".$fname." exists\r\n");
