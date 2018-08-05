@@ -2,8 +2,8 @@
 $filesInUse="";
 $options=getArgv(
   $argv,
-  ['-i'=>'blueprint','-build'=>'build',"-watch"=>'watch',"-watchtime"=>'watchtime',"-mode"=>"mode","-debug"=>"debug"],
-  ['blueprint'=>'','build'=>false,"watch"=>false,'watchtime'=>5,"mode"=>"","debug"=>false]
+  ['-i'=>'blueprint','-o'=>'output','-build'=>'build',"-watch"=>'watch',"-watchtime"=>'watchtime',"-mode"=>"mode","-debug"=>"debug"],
+  ['blueprint'=>'','output'=>'','build'=>false,"watch"=>false,'watchtime'=>5,"mode"=>"","debug"=>false]
 );
 
 if(!$options['blueprint'] && !$options['watch']){
@@ -11,10 +11,11 @@ if(!$options['blueprint'] && !$options['watch']){
 Blueprint - is a static site generator written in PHP.
 
 Usage:
-php blueprint.php -- [-i <folder>] [-build] [-watch] [-watchtime <sec>]
+php blueprint.php -- [-i <folder>] [-o <folder>] [-build] [-watch] [-watchtime <sec>]
 
 Options:
 -i <folder>       : define folder from where blueprint.json will be loaded
+-o <folder>       : output folder
 -build            : build final bandles, shortcut for -mode build
 -mode <mode>      : mode, can be dev, build or any other custom mode
 -watch            : watch -i folder
@@ -96,9 +97,10 @@ function doBuilding($options){
 
       'blueprint'=>$options['blueprint'],
 
-      'folder-output'=>$options['blueprint'].'/build',
+      'folder-output'=>$options['output']?$options['output']:($options['blueprint'].'/build'),
       'folder-static'=>$options['blueprint'].'/static',
 
+      'folder-def'=>'blueprint',
       'folder-afb'=>'afb',
       'folder-lib'=>'blocks',
 
@@ -242,7 +244,7 @@ function buildBlock($blockData,$pageData,$siteData,&$html,&$styles,&$js,&$images
   $folder=$siteData['blueprint'].'/'.$siteData['folder-lib'].'/'.$blockData['template'];
 
   if(!file_exists($folder)){
-    $folder=$siteData['folder-lib'].'/'.$blockData['template'];
+    $folder=$siteData['folder-def'].'/'.$siteData['folder-lib'].'/'.$blockData['template'];
     if(!file_exists($folder)){
       die("There is no ".$folder." block\r\n");
     };
