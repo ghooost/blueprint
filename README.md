@@ -6,20 +6,38 @@ and builds CSS and JS bundles.
 ## Usage
 
 ```
+
+php blueprint.php -- [-i <folder>] [-o <folder>] [-build] [-watch] [-watchtime <sec>] [-revers] [-f <folder>] [-c <css file>]
+
+Options:
+
+
 php blueprint.php -- [-i <folder>] [-build] [-watch] [-watchtime <sec>]
 ```
 
 ## Command line parameters
 
-**-i FOLDER** - define folder from where blueprint.json will be loaded
+### Construction mode:
 
-**-mode MODE** - set mode, can be build, dev or any other custom mode, see modes
+**-i <folder>**       : define folder from where blueprint.json will be loaded
 
-**-build** - build final bundles, shortcut for **-mode build**
+**-o <folder>**       : output folder
 
-**-watch** - watch -i folder
+**-build**            : build final bandles, shortcut for -mode build
 
-**-watchtime SEC** - watch timeout in seconds
+**-mode <mode>**      : mode, can be dev, build, revers or any other custom mode
+
+**-watch**            : watch -i folder
+
+**-watchtime <sec>**  : watch timeout in seconds
+
+###Revers mode:
+
+**-revers**          : set revers mode
+
+**-f <folder>**      : define folder with block html
+
+**-c <css file, css file....>**    : css file[s] for deconstruction
 
 
 ## Blueprint.json
@@ -326,8 +344,17 @@ Build mode can be switched on with **-build** option or with **-mode build**.
 ## Watch mode
 
 In watch state blueprint.php reviews working folder every N seconds and
-rebuild a site if something inside the watched folders was changed.
+rebuilds a site if something inside the watched folders was changed.
 
 Watch mode can be switched on with **-watch** option.
 
 You can define timeout to review changes with **-watchtime** option. Default is 5 sec.
+
+##Reverse mode
+
+This mode is for collect classes and images used in a html code.
+
+You can create a folder (block), put there index.html with the block HTML and
+run blueprint.php in reverse mode. It will collect clases and images for the block.
+
+Then you can easily use this creature as a block for your site.

@@ -3,24 +3,31 @@
 $filesInUse="";
 $options=getArgv(
   $argv,
-  ['-i'=>'blueprint','-o'=>'output','-build'=>'build',"-watch"=>'watch',"-watchtime"=>'watchtime',"-mode"=>"mode","-debug"=>"debug"],
-  ['blueprint'=>'','output'=>'','build'=>false,"watch"=>false,'watchtime'=>5,"mode"=>"","debug"=>false]
+  ['-f'=>'revers_folder','-c'=>'revers_css','-i'=>'blueprint','-o'=>'output','-revers'=>'revers','-build'=>'build',"-watch"=>'watch',"-watchtime"=>'watchtime',"-mode"=>"mode","-debug"=>"debug"],
+  ['revers_folder'=>'','revers_css'=>'','blueprint'=>'','output'=>'','revers'=>false,'build'=>false,"watch"=>false,'watchtime'=>5,"mode"=>"","debug"=>false]
 );
 
-if(!$options['blueprint'] && !$options['watch']){
+if(!$options['blueprint'] && !$options['watch'] && !$options['revers']){
   die(<<<EOT
 Blueprint - is a static site generator written in PHP.
 
 Usage:
-php blueprint.php -- [-i <folder>] [-o <folder>] [-build] [-watch] [-watchtime <sec>]
+php blueprint.php -- [-i <folder>] [-o <folder>] [-build] [-watch] [-watchtime <sec>] [-revers] [-f <folder>] [-c <css file>]
 
 Options:
+
+Construction mode:
 -i <folder>       : define folder from where blueprint.json will be loaded
 -o <folder>       : output folder
 -build            : build final bandles, shortcut for -mode build
--mode <mode>      : mode, can be dev, build or any other custom mode
+-mode <mode>      : mode, can be dev, build, revers or any other custom mode
 -watch            : watch -i folder
 -watchtime <sec>  : watch timeout in seconds
+
+Revers mode:
+-revers          : set revers mode
+-f <folder>      : define folder with block html
+-c <css file, css file....>    : css file[s] for deconstruction
 
 More info:
 https://github.com/ghooost/blueprint
@@ -33,10 +40,15 @@ if($options['build']){
   $options['mode']='build';
 };
 
+if($options['revers']){
+  $options['mode']='revers';
+};
+
 if(empty($options['mode'])){
   $options['mode']='dev';
 };
 
+if($options)
 if($options['watch']){
   //do watch!
   if($options['blueprint']){
@@ -45,9 +57,79 @@ if($options['watch']){
     $folderToWatch=".";
   };
   doWatch($folderToWatch,$options);
+} else if($options['mode']=='revers'){
+  doRevers($options);
 } else {
   doBuilding($options);
 }
+
+function doRevers($options){
+  if(empty($options['revers_folder'])) {
+    die('Revers mode requires -f <revers folder> option set\r\n');
+  };
+  if(empty($options['revers_css'])) {
+    die('Revers mode requires -c <css file> option set\r\n');
+  };
+  $folder=$options['revers_folder'];
+  $css=$options['revers_css'];
+  if(!file_exists($folder)){
+    die('There is no <revers folder> found\r\n');
+  }
+  if(!file_exists($folder.'/index.html')){
+    die('There is no <revers folder>/index.html found\r\n');
+  }
+  if(!file_exists($css)){
+    die('There is no <css file> found\r\n');
+  }
+
+  $usedClasses=array();
+  $body=join('',file($folder.'/index.html'));
+  if(preg_match_all('/class\=[\"\']([^\'\"]+)[\"\']/imu',$body,$vars)){
+    foreach($vars[1] as $value){
+      $arr=preg_split('/\s+/',$value);
+      foreach($arr as $v)
+        if($v)
+          $usedClasses[$v]=true;
+    }
+  }
+
+  $classes=array_keys($usedClasses);
+
+  $fin=array();
+  $style=join('',file($css));
+  $styles=preg_split('/\@media/imu',$style);
+  foreach($styles as $piece){
+    $pkey='def';
+    if(preg_match('/^\s*(\([^\)]+\))/',$piece,$vals)){
+      $pkey=$vals[1];
+    };
+    foreach($classes as $c){
+      if(preg_match_all('/([^}{]*\.'.$c.'\s+[^{]*\{[^}]+\})/imu',$piece,$vals)){
+        foreach($vals[1] as $rule){
+          $fin[$pkey][]=$rule;
+        }
+      }
+    }
+  }
+
+  $ret="";
+  foreach($fin as $k=>$rules){
+    echo $k."\r\n";
+
+    $locBody=join('',$rules);
+
+    if($k=='def'){
+      $ret.=$locBody."\r\n";
+    } else {
+      $ret.='@media '.$k." {\r\n".$locBody."\r\n}\r\n";
+    }
+  }
+
+  $f=fopen($folder.'/style.css','w');
+  fputs($f,$ret);
+  fclose($f);
+}
+
 
 function doWatch($folder,$options){
   $hash="";
@@ -148,7 +230,7 @@ function doBuilding($options){
   $fname=firstNotEmpty($siteData,[$mode.'-maincss','maincss']);
   $f=fopen($siteData['folder-output'].'/'.$fname,'w');
 
-echo $siteData['folder-output'].'/'.$fname;
+//echo $siteData['folder-output'].'/'.$fname;
   if($f){
     $body=join("\r\n",$styles);
 
